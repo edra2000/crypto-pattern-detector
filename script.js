@@ -28,28 +28,17 @@ async function getCoinData(symbol) {
 
 // ---- اكتشاف الأنماط ----
 function detectPatterns(klines) {
-    // استخراج الأسعار للإغلاق فقط
     const closes = klines.map(k=>parseFloat(k[4]));
-    // Double Bottom (قاع ثنائي)
     let db = findDoubleBottom(closes);
     if (db) return db;
-
-    // Triple Top (قمة ثلاثية)
     let tt = findTripleTop(closes);
     if (tt) return tt;
-
-    // Triple Bottom (قاع ثلاثي)
     let tb = findTripleBottom(closes);
     if (tb) return tb;
-
-    // Ascending Triangle (ممكن توسعة)
     let at = findAscendingTriangle(closes);
     if (at) return at;
-
-    // Descending Triangle (ممكن توسعة)
     let dt = findDescendingTriangle(closes);
     if (dt) return dt;
-
     return null;
 }
 function findDoubleBottom(arr) {
@@ -177,7 +166,7 @@ function createCard(symbol, ticker, pattern) {
             <div>حالة النموذج: <b style="color:${pattern.confirmed?'#2ed573':'#ffa502'};">${pattern.confirmed?'اختراق مؤكد':'بانتظار تأكيد الاختراق'}</b></div>
         </div>
         <button class="show-more">تفاصيل النموذج</button>
-        ` : ''}
+        ` : `<div class="pattern-none">لا يتوفر نموذج فني</div>`}
     </div>
     `;
 }
