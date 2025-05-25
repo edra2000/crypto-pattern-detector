@@ -4,22 +4,71 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مكتشف الأنماط الفنية للعملات الرقمية</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
-        <h1>مكتشف الأنماط الفنية الكلاسيكية للعملات الرقمية</h1>
-        <p>تحليل مباشر لأزواج USDT في Binance Spot</p>
+        <div class="container">
+            <h1>🔍 مكتشف الأنماط الفنية الكلاسيكية</h1>
+            <p>اكتشاف وتحليل الأنماط الفنية للعملات الرقمية في الوقت الفعلي</p>
+        </div>
     </header>
-    <main>
-        <div id="cards-container" class="grid"></div>
+
+    <main class="container">
+        <div class="filters">
+            <select id="patternFilter">
+                <option value="">جميع الأنماط</option>
+                <option value="double-bottom">القاع الثنائي</option>
+                <option value="triple-top">القمة الثلاثية</option>
+                <option value="triple-bottom">القاع الثلاثي</option>
+                <option value="head-shoulders">الرأس والكتفين</option>
+                <option value="inverted-head-shoulders">الرأس والكتفين المقلوب</option>
+                <option value="symmetrical-triangle">المثلث المتماثل</option>
+                <option value="ascending-triangle">المثلث الصاعد</option>
+                <option value="descending-triangle">المثلث الهابط</option>
+                <option value="broadening-pattern">النموذج المتباعد</option>
+                <option value="rectangle">المستطيل</option>
+                <option value="flags-pennants">الأعلام والأعلام المثلثة</option>
+                <option value="rising-wedge">الوتد الصاعد</option>
+                <option value="falling-wedge">الوتد الهابط</option>
+                <option value="rounding-tops">القمم المستديرة</option>
+                <option value="rounding-bottoms">القيعان المستديرة</option>
+                <option value="v-top">نموذج القمة V</option>
+                <option value="v-bottom">نموذج القاع V</option>
+            </select>
+            
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="البحث عن عملة...">
+            </div>
+            
+            <div class="status">
+                <span id="connectionStatus">🔴 غير متصل</span>
+                <span id="lastUpdate">آخر تحديث: --</span>
+            </div>
+        </div>
+
+        <div id="loadingSpinner" class="loading">
+            <div class="spinner"></div>
+            <p>جاري تحميل البيانات...</p>
+        </div>
+
+        <div id="cryptoGrid" class="crypto-grid">
+            <!-- البطاقات ستظهر هنا -->
+        </div>
     </main>
-    <div id="modal" class="modal">
+
+    <!-- نافذة تفاصيل النموذج -->
+    <div id="patternModal" class="modal">
         <div class="modal-content">
-            <span id="close-modal">&times;</span>
-            <div id="modal-details"></div>
+            <span class="close">&times;</span>
+            <div id="modalBody">
+                <!-- محتوى النافذة -->
+            </div>
         </div>
     </div>
-    <script src="script.js"></script>
+
+    <script src="patternDetector.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
