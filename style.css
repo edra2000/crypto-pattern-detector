@@ -119,6 +119,15 @@ header p {
     color: #fff;
     font-size: .97rem;
 }
+.pattern-none {
+    margin-top: 1.2em;
+    color: #aaa;
+    background: #232323;
+    border-radius: 8px;
+    padding: 0.5em 0.7em;
+    text-align: center;
+    font-size: 1.01rem;
+}
 .card .show-more {
     position: absolute;
     left: 1rem;
