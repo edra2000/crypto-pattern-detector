@@ -68,12 +68,6 @@
     <div id="cardsGrid" class="cards-grid"></div>
   </div>
   <script>
-    // دالة تساعدنا على جلب البيانات مع proxy لتجاوز CORS
-    function fetchWithProxy(url, options = {}) {
-      const proxyUrl = "https://corsproxy.io/?";
-      return fetch(proxyUrl + url, options);
-    }
-
     // قائمة العملات المستقرة الشائعة
     const stableCoins = ["USDT", "BUSD", "USDC", "TUSD", "USDP", "DAI", "FDUSD", "SUSD", "EUR", "GBP", "TRY", "BRL", "IDRT", "UAH", "NGN", "ZAR", "RUB", "VAI"];
     // الكلاس الأساسي
@@ -99,7 +93,7 @@
       }
       // جلب جميع أزواج السوق الفوري USDT فقط واستبعاد المستقرة
       async getSpotSymbols() {
-        const res = await fetchWithProxy("https://api.binance.com/api/v3/exchangeInfo");
+        const res = await fetch("https://api.binance.com/api/v3/exchangeInfo");
         const data = await res.json();
         // فقط أزواج spot وليس future
         const symbols = data.symbols.filter(s =>
@@ -142,11 +136,11 @@
       async analyzeSymbol(symbol) {
         try {
           // جلب بيانات السعر الحالي
-          const priceRes = await fetchWithProxy(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`);
+          const priceRes = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`);
           if (!priceRes.ok) throw new Error();
           const priceData = await priceRes.json();
           // جلب بيانات الشموع
-          const candlesRes = await fetchWithProxy(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=1h&limit=100`);
+          const candlesRes = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=1h&limit=100`);
           if (!candlesRes.ok) throw new Error();
           const candlesData = await candlesRes.json();
           const candles = candlesData.map(c => ({
