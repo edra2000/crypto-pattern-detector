@@ -43,6 +43,10 @@ header p {
     cursor: pointer;
     position: relative;
     border: 1px solid #252525;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
 }
 .card:hover {
     transform: translateY(-5px) scale(1.04);
@@ -104,6 +108,16 @@ header p {
     font-weight: bold;
     color: #ffd700;
     text-shadow: 0 0 4px #000;
+}
+.pattern-targets {
+    margin-top: 0.5em;
+    background: #0a2333;
+    border-radius: 12px;
+    padding: 0.5em 0.7em;
+    box-shadow: 0 2px 8px #00d4ff22;
+    line-height: 1.5;
+    color: #fff;
+    font-size: .97rem;
 }
 .card .show-more {
     position: absolute;
