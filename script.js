@@ -1,25 +1,6 @@
 const stableCoins = [
     "USDT", "BUSD", "USDC", "TUSD", "USDP", "DAI", "FDUSD", "SUSD", "EUR", "GBP", "TRY", "BRL", "IDRT", "UAH", "NGN", "ZAR", "RUB", "VAI"
 ];
-const patternList = [
-    {en:"Double Bottom", ar:"القاع الثنائي"},
-    {en:"Triple Top", ar:"القمة الثلاثية"},
-    {en:"Triple Bottom", ar:"القاع الثلاثي"},
-    {en:"Head & Shoulders", ar:"الرأس والكتفين"},
-    {en:"Inverted Head & Shoulders", ar:"الرأس والكتفين المقلوب"},
-    {en:"Symmetrical Triangle", ar:"المثلث المتماثل"},
-    {en:"Ascending Triangle", ar:"المثلث الصاعد"},
-    {en:"Descending Triangle", ar:"المثلث الهابط"},
-    {en:"Boarding Pattern", ar:"النموذج المتباعد"},
-    {en:"Rectangle", ar:"المستطيل"},
-    {en:"Flags & Pennants", ar:"الأعلام والأعلام المثلثة"},
-    {en:"Rising Wedge", ar:"الوتد الصاعد"},
-    {en:"Falling Wedge", ar:"الوتد الهابط"},
-    {en:"Rounding Tops", ar:"القمم المستديرة"},
-    {en:"Rounding Bottoms", ar:"القيعان المستديرة"},
-    {en:"V Top Pattern", ar:"القمة V"},
-    {en:"V Bottom Pattern", ar:"القاع V"}
-];
 
 // ---- الحصول على أزواج USDT Spot فقط ----
 async function getSpotPairs() {
@@ -73,7 +54,6 @@ function detectPatterns(klines) {
 }
 function findDoubleBottom(arr) {
     if(arr.length < 40) return null;
-    // ابحث عن قاعين متساويين تقريبًا بفارق بسيط بينهم وارتفاع في المنتصف
     for(let i=10;i<arr.length-20;i++) {
         for(let j=i+6;j<arr.length-10;j++) {
             let b1 = arr[i], b2 = arr[j], diff = Math.abs(b1-b2)/b1;
@@ -83,7 +63,7 @@ function findDoubleBottom(arr) {
                     return {
                         name: "القاع الثنائي",
                         details: `تم رصد قاعين متقاربين في السعر مع ارتفاع واضح بينهما. النموذج يشير لاحتمالية انعكاس إيجابي.`,
-                        targets: [`الهدف الأول: ${(highBetween+(highBetween-b1)*0.6).toFixed(4)}`, `وقف الخسارة: ${(Math.min(b1,b2)*0.96).toFixed(4)}`],
+                        targets: [`الهدف: ${(highBetween+(highBetween-b1)*0.6).toFixed(4)}`, `وقف الخسارة: ${(Math.min(b1,b2)*0.96).toFixed(4)}`],
                         confirmed: arr[arr.length-1]>highBetween
                     };
                 }
@@ -94,7 +74,6 @@ function findDoubleBottom(arr) {
 }
 function findTripleTop(arr) {
     if(arr.length < 60) return null;
-    // ابحث عن 3 قمم متقاربة
     for(let i=10;i<arr.length-30;i++) {
         let top1 = arr[i];
         let js = [i+8,i+20];
@@ -106,7 +85,7 @@ function findTripleTop(arr) {
                 return {
                     name: "القمة الثلاثية",
                     details: `تم رصد ثلاث قمم سعرية متقاربة، غالباً ما يشير هذا النموذج لانعكاس هبوطي.`,
-                    targets: [`الهدف الأول: ${(minBetween-(top1-minBetween)*0.7).toFixed(4)}`, `وقف الخسارة: ${(top1*1.04).toFixed(4)}`],
+                    targets: [`الهدف: ${(minBetween-(top1-minBetween)*0.7).toFixed(4)}`, `وقف الخسارة: ${(top1*1.04).toFixed(4)}`],
                     confirmed: arr[arr.length-1]<minBetween
                 };
             }
@@ -127,7 +106,7 @@ function findTripleBottom(arr) {
                 return {
                     name: "القاع الثلاثي",
                     details: `تم رصد ثلاث قيعان سعرية متقاربة مع ارتفاع بينهما مما يشير لاحتمالية انعكاس إيجابي.`,
-                    targets: [`الهدف الأول: ${(maxBetween+(maxBetween-bot1)*0.6).toFixed(4)}`, `وقف الخسارة: ${(bot1*0.96).toFixed(4)}`],
+                    targets: [`الهدف: ${(maxBetween+(maxBetween-bot1)*0.6).toFixed(4)}`, `وقف الخسارة: ${(bot1*0.96).toFixed(4)}`],
                     confirmed: arr[arr.length-1]>maxBetween
                 };
             }
@@ -136,7 +115,6 @@ function findTripleBottom(arr) {
     return null;
 }
 function findAscendingTriangle(arr) {
-    // مقاومة أفقية وقاع صاعد
     let len = arr.length;
     if(len<30) return null;
     let resistance = Math.max(...arr.slice(len-25));
@@ -148,14 +126,13 @@ function findAscendingTriangle(arr) {
         return {
             name: "المثلث الصاعد",
             details: `تم رصد مقاومة أفقية مع قيعان صاعدة. عادة ما يشير هذا النموذج لاستمرار الصعود بعد اختراق المقاومة.`,
-            targets: [`الهدف الأول: ${(resistance+(resistance-support)*0.7).toFixed(4)}`, `وقف الخسارة: ${(support*0.98).toFixed(4)}`],
+            targets: [`الهدف: ${(resistance+(resistance-support)*0.7).toFixed(4)}`, `وقف الخسارة: ${(support*0.98).toFixed(4)}`],
             confirmed: arr[len-1]>resistance*1.01
         };
     }
     return null;
 }
 function findDescendingTriangle(arr) {
-    // دعم أفقي وقمة هابطة
     let len = arr.length;
     if(len<30) return null;
     let support = Math.min(...arr.slice(len-25));
@@ -166,7 +143,7 @@ function findDescendingTriangle(arr) {
         return {
             name: "المثلث الهابط",
             details: `تم رصد دعم أفقي مع قمم هابطة. غالباً ما يشير لاستمرار الهبوط بعد كسر الدعم.`,
-            targets: [`الهدف الأول: ${(support-(Math.max(...arr.slice(len-25))-support)*0.7).toFixed(4)}`, `وقف الخسارة: ${(Math.max(...arr.slice(len-25))*1.02).toFixed(4)}`],
+            targets: [`الهدف: ${(support-(Math.max(...arr.slice(len-25))-support)*0.7).toFixed(4)}`, `وقف الخسارة: ${(Math.max(...arr.slice(len-25))*1.02).toFixed(4)}`],
             confirmed: arr[len-1]<support*0.99
         };
     }
@@ -193,14 +170,22 @@ function createCard(symbol, ticker, pattern) {
         </div>
         <div class="liquidity">حجم السيولة: ${liquidity} $</div>
         <div class="volume">حجم التداول: ${vol}</div>
+        ${pattern ? `
         <div class="pattern-name">${pattern.name}</div>
+        <div class="pattern-targets">
+            <div>${pattern.targets[0]}</div>
+            <div>حالة النموذج: <b style="color:${pattern.confirmed?'#2ed573':'#ffa502'};">${pattern.confirmed?'اختراق مؤكد':'بانتظار تأكيد الاختراق'}</b></div>
+        </div>
         <button class="show-more">تفاصيل النموذج</button>
+        ` : ''}
     </div>
     `;
 }
+
 function showModal(symbol, ticker, pattern) {
     let html = `
     <h2>${symbol.replace("USDT","")} / USDT</h2>
+    ${pattern ? `
     <div style="margin:0.8em 0;">
         <b>النموذج:</b> ${pattern.name}
     </div>
@@ -208,8 +193,9 @@ function showModal(symbol, ticker, pattern) {
     <div class="pattern-targets">
         <div>${pattern.targets[0]}</div>
         <div>${pattern.targets[1]}</div>
-        <div>تأكيد الاختراق: <b style="color:${pattern.confirmed?'#2ed573':'#ff5e5e'};">${pattern.confirmed?'تم التأكيد':'غير مؤكد'}</b></div>
+        <div>حالة النموذج: <b style="color:${pattern.confirmed?'#2ed573':'#ffa502'};">${pattern.confirmed?'اختراق مؤكد':'بانتظار تأكيد الاختراق'}</b></div>
     </div>
+    ` : `<div style="margin:0.8em 0;">لا يوجد نموذج فني مكتشف لهذه العملة حالياً.</div>`}
     <div style="margin-top:1em; color:#bbb; font-size:.95em;">
         <b>السعر:</b> $${parseFloat(ticker.lastPrice).toFixed(5)}<br>
         <b>التغير 24 ساعة:</b> ${parseFloat(ticker.priceChangePercent).toFixed(2)}%<br>
@@ -226,37 +212,43 @@ async function main() {
     const container = document.getElementById("cards-container");
     container.innerHTML = "<div style='grid-column:1/-1;text-align:center;color:#aaa;font-size:1.2rem'>جاري تحميل وتحليل العملات ...</div>";
     let pairs = await getSpotPairs();
+    let allTickers = {};
     let results = [];
-    // تحليل العملات على دفعات لعدم إرهاق Binance
     for(let i=0;i<pairs.length;i+=15) {
         let batch = pairs.slice(i,i+15);
         let batchData = await Promise.all(batch.map(async symbol=>{
             try{
                 let {ticker, klines} = await getCoinData(symbol);
+                allTickers[symbol] = ticker;
                 let pattern = detectPatterns(klines);
                 if(pattern) return {symbol, ticker, pattern};
-            }catch(e){return null;}
+            }catch(e){allTickers[symbol] = null;}
         }));
         results = results.concat(batchData.filter(Boolean));
-        // تحديث البطاقات تدريجياً
-        if(i%30===0) renderCards(container, results);
+        if(i%30===0) renderCards(container, results, allTickers, pairs);
         await new Promise(res=>setTimeout(res, 400));
     }
-    renderCards(container, results);
+    renderCards(container, results, allTickers, pairs);
 }
-function renderCards(container, results) {
-    if(!results.length) {
-        container.innerHTML = "<div style='grid-column:1/-1;text-align:center;color:#aaa;font-size:1.2rem'>لم يتم العثور على أنماط فنية حالياً.</div>";
+
+function renderCards(container, results, allTickers, allPairs) {
+    if(!Object.keys(allTickers).length) {
+        container.innerHTML = "<div style='grid-column:1/-1;text-align:center;color:#aaa;font-size:1.2rem'>لم يتم العثور على بيانات العملات.</div>";
         return;
     }
-    container.innerHTML = results.map(r => createCard(r.symbol, r.ticker, r.pattern)).join("");
+    container.innerHTML = allPairs.map(symbol => {
+        const ticker = allTickers[symbol];
+        if (!ticker) return '';
+        const found = results.find(r => r.symbol === symbol);
+        return createCard(symbol, ticker, found ? found.pattern : null);
+    }).join("");
     // ربط الحدث لعرض تفاصيل النموذج
     document.querySelectorAll(".card .show-more").forEach(btn=>{
         btn.onclick = e => {
             let card = btn.closest(".card");
             let symbol = card.getAttribute("data-symbol");
             let found = results.find(r=>r.symbol===symbol);
-            showModal(found.symbol, found.ticker, found.pattern);
+            showModal(symbol, allTickers[symbol], found ? found.pattern : null);
         }
     });
 }
