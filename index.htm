@@ -7,22 +7,21 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    /* (نفس التنسيقات السابقة - لم تتغير) */
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 100%); color: #fff; min-height: 100vh; margin: 0; direction: rtl; }
     .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
-    .header { text-align: center; margin-bottom: 2rem; padding: 1.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); color: #fff; }
+    .header { text-align: center; margin-bottom: 2rem; padding: 1.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);}
     .controls { display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; justify-content: center; }
     .search-container { position: relative; flex: 1; max-width: 300px; }
     .search-container input { width: 100%; padding: 1rem 1rem 1rem 3rem; border: 2px solid #333; border-radius: 25px; background: #1a1a1a; color: #fff; font-size: 1rem; transition: all 0.3s; }
     .search-container i { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); color: #888; }
-    .refresh-btn { padding: 1rem 2rem; background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%); border: none; border-radius: 25px; color: #000; font-weight: bold; cursor: pointer; font-size: 1rem; transition: all 0.3s; }
+    .refresh-btn { padding: 1rem 2rem; background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%); border: none; border-radius: 25px; color: #000; font-weight: bold; cursor: pointer; font-size: 1rem; }
     .refresh-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 212, 255, 0.4); }
     .loading { text-align: center; padding: 3rem 2rem; display: none; }
     .loading.show { display: block; }
     .loading-spinner { width: 60px; height: 60px; border: 4px solid #333; border-top: 4px solid #00d4ff; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 2rem; }
     @keyframes spin { 0% {transform:rotate(0);} 100% {transform:rotate(360deg);} }
     .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 2rem; margin-top: 2rem; }
-    .crypto-card { background: linear-gradient(145deg, #1e1e1e, #2a2a2a); border-radius: 20px; padding: 1.5rem; box-shadow: 0 8px 25px rgba(0,0,0,0.3); transition: all 0.3s; border: 1px solid #333; cursor: pointer; color: #fff; }
+    .crypto-card { background: linear-gradient(145deg, #1e1e1e, #2a2a2a); border-radius: 20px; padding: 1.5rem; box-shadow: 0 8px 25px rgba(0,0,0,0.3); transition: all 0.3s; border: 1px solid #333;}
     .crypto-card:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 15px 35px rgba(0, 212, 255, 0.2); border-color: #00d4ff; }
     .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
     .coin-info h3 { font-size: 1.3rem; margin-bottom: 0.25rem; color: #00d4ff; }
@@ -45,7 +44,7 @@
     .stop-loss { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); color: #000; }
     .error-message { text-align: center; padding: 3rem; color: #ff4757; }
     .error-message i { font-size: 3rem; margin-bottom: 1rem; }
-    @media (max-width: 768px) { .container { padding: 1rem; } .header h1 { font-size: 2rem; } .cards-grid { grid-template-columns: 1fr; gap: 1rem; } .controls { flex-direction: column; } .search-container { max-width: none; } }
+    @media (max-width: 768px) { .container { padding: 1rem; } .header h1 { font-size: 2rem; } .cards-grid { grid-template-columns: 1fr; gap: 1rem; } .controls { flex-direction: column; } .search-container { max-width: 100%; } }
   </style>
 </head>
 <body>
@@ -69,6 +68,12 @@
     <div id="cardsGrid" class="cards-grid"></div>
   </div>
   <script>
+    // دالة تساعدنا على جلب البيانات مع proxy لتجاوز CORS
+    function fetchWithProxy(url, options = {}) {
+      const proxyUrl = "https://corsproxy.io/?";
+      return fetch(proxyUrl + url, options);
+    }
+
     // قائمة العملات المستقرة الشائعة
     const stableCoins = ["USDT", "BUSD", "USDC", "TUSD", "USDP", "DAI", "FDUSD", "SUSD", "EUR", "GBP", "TRY", "BRL", "IDRT", "UAH", "NGN", "ZAR", "RUB", "VAI"];
     // الكلاس الأساسي
@@ -94,7 +99,7 @@
       }
       // جلب جميع أزواج السوق الفوري USDT فقط واستبعاد المستقرة
       async getSpotSymbols() {
-        const res = await fetch("https://api.binance.com/api/v3/exchangeInfo");
+        const res = await fetchWithProxy("https://api.binance.com/api/v3/exchangeInfo");
         const data = await res.json();
         // فقط أزواج spot وليس future
         const symbols = data.symbols.filter(s =>
@@ -102,7 +107,7 @@
           s.isSpotTradingAllowed &&
           s.symbol.endsWith("USDT") &&
           !stableCoins.some(stable => s.baseAsset === stable || s.quoteAsset === stable) &&
-          !s.symbol.includes("UPUSDT") && !s.symbol.includes("DOWNUSDT") && // استبعاد الرموز ذات الرافعة
+          !s.symbol.includes("UPUSDT") && !s.symbol.includes("DOWNUSDT") &&
           !s.symbol.includes("BULLUSDT") && !s.symbol.includes("BEARUSDT")
         ).map(s => s.symbol);
         return symbols;
@@ -137,11 +142,11 @@
       async analyzeSymbol(symbol) {
         try {
           // جلب بيانات السعر الحالي
-          const priceRes = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`);
+          const priceRes = await fetchWithProxy(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`);
           if (!priceRes.ok) throw new Error();
           const priceData = await priceRes.json();
           // جلب بيانات الشموع
-          const candlesRes = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=1h&limit=100`);
+          const candlesRes = await fetchWithProxy(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=1h&limit=100`);
           if (!candlesRes.ok) throw new Error();
           const candlesData = await candlesRes.json();
           const candles = candlesData.map(c => ({
